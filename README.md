@@ -203,14 +203,28 @@ python manage.py tee prune_tee_logs --days=90
 
 ## Compatibility
 
-| django-tee | Python      | Django               |
-| ---------- | ----------- | -------------------- |
-| 0.1.x      | 3.10 – 3.13 | 4.2, 5.0, 5.1, 5.2   |
+### Python × Django matrix
 
-Backend: PostgreSQL is the primary target (the `args` column is
-`JSONField` and the project has historically run only on Postgres).
-SQLite *should* work for `JSONField` since Django 3.1 but is not part
-of the CI matrix — file an issue if you need it.
+Each cell marks a combination actually exercised in CI
+([test.yml](.github/workflows/test.yml)).
+
+| Django ↓ / Python → | 3.10 | 3.11 | 3.12 | 3.13 |
+| ------------------- | :--: | :--: | :--: | :--: |
+| 4.2 LTS             |  ✓   |  ✓   |  ✓   |  —   |
+| 5.0                 |  ✓   |  ✓   |  ✓   |  ✓   |
+| 5.1                 |  ✓   |  ✓   |  ✓   |  ✓   |
+| 5.2 LTS             |  ✓   |  ✓   |  ✓   |  ✓   |
+
+Django 4.2 LTS reaches end-of-life in April 2026 — newer projects
+should default to 5.2 LTS. Python 3.13 + Django 4.2 is excluded
+from CI because Django 4.2 does not officially support Python 3.13.
+
+### Database backend
+
+PostgreSQL is the primary target (the `args` column is `JSONField`
+and the project has historically run only on Postgres). SQLite
+*should* work for `JSONField` since Django 3.1 but is not part of
+the CI matrix — file an issue if you need it.
 
 ## Development
 

@@ -1,0 +1,117 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-tee"
+version = "0.1.0"
+description = "Run a Django management command and capture its stdout/stderr/traceback into the database — like Unix tee(1), but for cron jobs."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Michał Pasternak", email = "michal.dtz@gmail.com" },
+]
+keywords = [
+    "django",
+    "tee",
+    "logging",
+    "cron",
+    "management-command",
+    "audit",
+    "stdout",
+    "stderr",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Logging",
+]
+dependencies = [
+    "Django>=4.2",
+]
+
+[project.optional-dependencies]
+rollbar = ["rollbar>=0.16"]
+test = [
+    "pytest>=7",
+    "pytest-django>=4.8",
+    "pytest-mock>=3",
+    "model-bakery>=1.17",
+    "testcontainers[postgres]>=4",
+    "psycopg[binary]>=3",
+]
+dev = [
+    "ruff>=0.6",
+    "pre-commit>=3.5",
+    "build>=1",
+    "twine>=5",
+]
+
+[project.urls]
+Homepage = "https://github.com/iplweb/django-tee"
+Repository = "https://github.com/iplweb/django-tee"
+Issues = "https://github.com/iplweb/django-tee/issues"
+Changelog = "https://github.com/iplweb/django-tee/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/django_tee",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/django_tee"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "B",
+    "UP",
+    "C4",
+]
+ignore = [
+    "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["B", "ARG"]
+"src/django_tee/migrations/*.py" = ["E", "W", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+pythonpath = ["."]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]

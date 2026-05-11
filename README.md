@@ -40,9 +40,12 @@ python manage.py tee my_command --any --args you --want
 - Records start time, end time, and success / failure.
 - Browseable & searchable through Django admin (read-only — logs are
   written by the wrapper, not by hand).
-- Optional integration with [Rollbar](https://rollbar.com/) — if
-  `rollbar` is installed and configured, exceptions are also reported
-  there before being recorded.
+- Optional integration with error-reporting services — exceptions
+  raised by the wrapped command are forwarded to every configured
+  backend (currently [Rollbar](https://rollbar.com/) and
+  [Sentry](https://sentry.io/)) before being recorded. Backends are
+  pluggable; ship your own by pointing
+  `DJANGO_TEE_ERROR_BACKENDS` at any callable.
 - Output is forwarded to the original `stdout` / `stderr` *and*
   persisted, so interactive runs still feel normal.
 
@@ -81,17 +84,70 @@ python manage.py migrate
 > admin URLs are under `/admin/tee/log/`. The Python import path is
 > `django_tee` regardless.
 
-### Optional: Rollbar integration
+### Optional: error-reporting backends
+
+When the wrapped command raises, `django-tee` can also forward the
+exception to one or more error-reporting services before recording
+the traceback. Two backends ship in the box — Rollbar and Sentry —
+and custom callables are supported via dotted-path configuration.
+
+#### Rollbar
 
 ```bash
 pip install "django-tee[rollbar]"
 ```
 
-If `rollbar` is importable and you've initialised it in your project
-(see the [rollbar-pyrollbar
-docs](https://docs.rollbar.com/docs/django)), exceptions raised by
-the wrapped command are reported to Rollbar in addition to being
-recorded in the `Log` row. If `rollbar` is not installed, this is a
+Once `rollbar` is importable and initialised in your project (see
+the [rollbar-pyrollbar docs](https://docs.rollbar.com/docs/django)),
+exceptions are reported via `rollbar.report_exc_info`.
+
+#### Sentry
+
+```bash
+pip install "django-tee[sentry]"
+```
+
+Once `sentry-sdk` is importable and you've called `sentry_sdk.init(...)`
+somewhere in your startup (see the [Sentry Django
+docs](https://docs.sentry.io/platforms/python/integrations/django/)),
+exceptions are reported via `sentry_sdk.capture_exception`.
+
+#### Both at once
+
+```bash
+pip install "django-tee[all-backends]"
+```
+
+#### Configuration
+
+By default, every built-in backend whose SDK is importable is used.
+You can pin the active set explicitly:
+
+```python
+# settings.py
+DJANGO_TEE_ERROR_BACKENDS = ["sentry"]            # only Sentry
+DJANGO_TEE_ERROR_BACKENDS = ["rollbar", "sentry"] # both, in order
+DJANGO_TEE_ERROR_BACKENDS = []                    # disabled entirely
+```
+
+Entries are either built-in names (`"rollbar"`, `"sentry"`) or
+dotted paths to a callable that takes one argument — the
+`sys.exc_info()` tuple:
+
+```python
+# myapp/error_hooks.py
+def to_slack(exc_info):
+    ...
+
+# settings.py
+DJANGO_TEE_ERROR_BACKENDS = ["sentry", "myapp.error_hooks.to_slack"]
+```
+
+A backend that fails (network down, misconfigured) does **not**
+prevent other backends from running, and never masks the original
+exception — its traceback is still recorded in `Log`.
+
+If neither SDK is installed and the setting is unset, this is a
 no-op — no `try/except ImportError` needed in your code.
 
 ## Usage

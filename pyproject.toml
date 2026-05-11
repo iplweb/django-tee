@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "django-tee"
-version = "0.1.0"
+version = "0.2.0"
 description = "Run a Django management command and capture its stdout/stderr/traceback into the database — like Unix tee(1), but for cron jobs."
 readme = "README.md"
 license = { text = "MIT" }
@@ -52,6 +52,8 @@ dependencies = [
 
 [project.optional-dependencies]
 rollbar = ["rollbar>=0.16"]
+sentry = ["sentry-sdk>=1.40"]
+all-backends = ["rollbar>=0.16", "sentry-sdk>=1.40"]
 test = [
     "pytest>=7",
     "pytest-django>=4.8",

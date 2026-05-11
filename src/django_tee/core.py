@@ -5,13 +5,9 @@ from contextlib import redirect_stderr, redirect_stdout
 from django.core.management import ManagementUtility
 from django.utils import timezone
 
+from django_tee import backends
 from django_tee.models import Log
 from django_tee.utils import TeeIO
-
-try:
-    import rollbar  # type: ignore[import-not-found]
-except ImportError:  # pragma: no cover - exercised when rollbar is absent
-    rollbar = None
 
 
 def execute(argv, **kwargs):
@@ -27,9 +23,10 @@ def execute(argv, **kwargs):
     wrappers where you want a durable, queryable trail of what each
     job emitted.
 
-    If the optional ``rollbar`` dependency is installed and
-    configured, exceptions are also reported there before being
-    recorded.
+    On exception, every configured error-reporting backend (Rollbar,
+    Sentry, custom — see :mod:`django_tee.backends`) is given the
+    ``exc_info`` before the traceback is recorded. Backends that are
+    not installed are silently skipped.
     """
     stdout = TeeIO(kwargs.get("stdout") if "stdout" in kwargs else sys.stdout)
     stderr = TeeIO(kwargs.get("stderr") if "stderr" in kwargs else sys.stderr)
@@ -44,8 +41,7 @@ def execute(argv, **kwargs):
                     utility.execute()
                     log.finished_successfully = True
                 except Exception:
-                    if rollbar is not None:
-                        rollbar.report_exc_info(sys.exc_info())
+                    backends.report_exception(sys.exc_info())
                     log.finished_successfully = False
                     log.traceback = traceback.format_exc(limit=65535)
     finally:

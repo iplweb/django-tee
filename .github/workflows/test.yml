@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-        django-version: ["4.2", "5.0", "5.1", "5.2", "6.0"]
+        django-version: ["4.2", "5.0", "5.1", "5.2", "6.0", "6.1"]
         exclude:
           # Django 5.0+ requires Python 3.10+. Already satisfied. Drop combos
           # known to be unsupported as the matrix grows.
@@ -33,6 +33,11 @@ jobs:
             django-version: "6.0"
           - python-version: "3.11"
             django-version: "6.0"
+          # Django 6.1 requires Python 3.12+.
+          - python-version: "3.10"
+            django-version: "6.1"
+          - python-version: "3.11"
+            django-version: "6.1"
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

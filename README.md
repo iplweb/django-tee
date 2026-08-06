@@ -3,7 +3,7 @@
 [![tests](https://github.com/iplweb/django-tee/actions/workflows/test.yml/badge.svg)](https://github.com/iplweb/django-tee/actions/workflows/test.yml)
 [![PyPI version](https://img.shields.io/pypi/v/django-tee.svg)](https://pypi.org/project/django-tee/)
 [![Python versions](https://img.shields.io/pypi/pyversions/django-tee.svg)](https://pypi.org/project/django-tee/)
-[![Django versions](https://img.shields.io/badge/django-4.2%20%7C%205.0%20%7C%205.1%20%7C%205.2%20%7C%206.0-blue)](https://www.djangoproject.com/)
+[![Django versions](https://img.shields.io/badge/django-4.2%20%7C%205.0%20%7C%205.1%20%7C%205.2%20%7C%206.0%20%7C%206.1-blue)](https://www.djangoproject.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Run a Django management command and capture its `stdout`, `stderr` and
@@ -271,11 +271,12 @@ Each cell marks a combination actually exercised in CI
 | 5.1                 |  ✓   |  ✓   |  ✓   |  ✓   |
 | 5.2 LTS             |  ✓   |  ✓   |  ✓   |  ✓   |
 | 6.0                 |  —   |  —   |  ✓   |  ✓   |
+| 6.1                 |  —   |  —   |  ✓   |  ✓   |
 
 Django 4.2 LTS reached end-of-life in April 2026 — newer projects
-should default to 5.2 LTS or 6.0. Python 3.13 + Django 4.2 is
+should default to 5.2 LTS or 6.1. Python 3.13 + Django 4.2 is
 excluded from CI because Django 4.2 does not officially support
-Python 3.13. Django 6.0 requires Python 3.12+.
+Python 3.13. Django 6.0 and 6.1 require Python 3.12+.
 
 ### Database backend
 

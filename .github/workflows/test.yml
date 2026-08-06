@@ -57,4 +57,4 @@ jobs:
           uv pip install "Django~=${{ matrix.django-version }}.0"
 
       - name: Run tests
-        run: uv run pytest -v
+        run: uv run --no-sync pytest -v

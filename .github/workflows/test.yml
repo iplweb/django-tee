@@ -55,6 +55,19 @@ jobs:
           uv venv
           uv pip install -e ".[test]"
           uv pip install "Django~=${{ matrix.django-version }}.0"
+          # pytest-django 4.13 dropped support for Django < 5.2: its
+          # django_db fixture reads SimpleTestCase._pre_setup_ran_eagerly,
+          # an attribute that only exists from Django 5.2 on. It declares no
+          # Django floor, so the resolver happily pairs it with 4.2/5.0/5.1
+          # and every database test then errors out. Pin it back for the
+          # older rows.
+          case "${{ matrix.django-version }}" in
+            4.2|5.0|5.1) uv pip install "pytest-django<4.13" ;;
+          esac
 
       - name: Run tests
-        run: uv run --no-sync pytest -v
+        run: |
+          # --no-sync: a bare `uv run` re-syncs the environment from
+          # uv.lock and silently undoes the Django pin installed above.
+          uv run --no-sync python -c "import django; print('Django:', django.get_version())"
+          uv run --no-sync pytest -v

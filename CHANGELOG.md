@@ -8,12 +8,28 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-07
+
 ### Added
 
 - Support for Django 6.1: added to the CI test matrix (Python 3.12 and
   3.13 only — Django 6.1 requires Python 3.12+), plus the
   `Framework :: Django :: 6.1` Trove classifier and the README
   compatibility matrix.
+- The `Framework :: Django :: 6.0` and `Framework :: Django :: 6.1`
+  Trove classifiers are now published on PyPI (0.2.0 metadata stopped
+  at 5.2).
+
+### Fixed
+
+- CI: the test matrix no longer loses its pinned Django version.
+  `uv.lock` held Django 6.0.5 for Python >= 3.12, so a bare `uv run`
+  re-synced the environment and wiped the matrix pin — the test step
+  now runs with `--no-sync`, and the lock file was refreshed.
+- CI: pinned `pytest-django<4.13` for the Django 4.2 / 5.0 / 5.1 rows.
+  Newer pytest-django dropped Django < 5.2 (it relies on
+  `SimpleTestCase._pre_setup_ran_eagerly`), which was breaking 11
+  matrix combinations.
 
 ## [0.2.0] - 2026-05-10
 

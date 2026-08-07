@@ -6,6 +6,15 @@ The format is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/) and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Support for Django 6.1: added to the CI test matrix (Python 3.12 and
+  3.13 only — Django 6.1 requires Python 3.12+), plus the
+  `Framework :: Django :: 6.1` Trove classifier and the README
+  compatibility matrix.
+
 ## [0.2.0] - 2026-05-10
 
 ### Added

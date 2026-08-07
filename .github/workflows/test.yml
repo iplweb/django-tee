@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-        django-version: ["4.2", "5.0", "5.1", "5.2", "6.0"]
+        django-version: ["4.2", "5.0", "5.1", "5.2", "6.0", "6.1"]
         exclude:
           # Django 5.0+ requires Python 3.10+. Already satisfied. Drop combos
           # known to be unsupported as the matrix grows.
@@ -33,6 +33,11 @@ jobs:
             django-version: "6.0"
           - python-version: "3.11"
             django-version: "6.0"
+          # Django 6.1 requires Python 3.12+.
+          - python-version: "3.10"
+            django-version: "6.1"
+          - python-version: "3.11"
+            django-version: "6.1"
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -50,6 +55,19 @@ jobs:
           uv venv
           uv pip install -e ".[test]"
           uv pip install "Django~=${{ matrix.django-version }}.0"
+          # pytest-django 4.13 dropped support for Django < 5.2: its
+          # django_db fixture reads SimpleTestCase._pre_setup_ran_eagerly,
+          # an attribute that only exists from Django 5.2 on. It declares no
+          # Django floor, so the resolver happily pairs it with 4.2/5.0/5.1
+          # and every database test then errors out. Pin it back for the
+          # older rows.
+          case "${{ matrix.django-version }}" in
+            4.2|5.0|5.1) uv pip install "pytest-django<4.13" ;;
+          esac
 
       - name: Run tests
-        run: uv run pytest -v
+        run: |
+          # --no-sync: a bare `uv run` re-syncs the environment from
+          # uv.lock and silently undoes the Django pin installed above.
+          uv run --no-sync python -c "import django; print('Django:', django.get_version())"
+          uv run --no-sync pytest -v
